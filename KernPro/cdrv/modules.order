@@ -1,0 +1,4 @@
+kernel//home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_skel.ko
+kernel//home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_udev.ko
+kernel//home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_reg.ko
+kernel//home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_misc.ko

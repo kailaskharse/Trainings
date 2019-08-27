@@ -1,0 +1,1 @@
+cmd_/home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_skel.ko := ld -r -m elf_i386 -T ./scripts/module-common.lds --build-id  -o /home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_skel.ko /home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_skel.o /home/veda/Documents/Sourcesforstudents/KernPro_New/cdrv/chrdrv_skel.mod.o
