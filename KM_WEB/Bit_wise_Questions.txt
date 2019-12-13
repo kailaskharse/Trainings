@@ -1,0 +1,40 @@
+We are sending the bit wise operator questions from today's class, below.
+Please take the remaining questions that we didn't discuss today, as an assignment and try to find solutions. We will discuss the solutions in class, on  tomorrow, i.e, 15th Apr, 2014.
+
+
+Bitwise Operators:
+------------------------
+1. Write a Macro's Set,clear and toggle n'th bit using bit wise operator?
+2. WAP implement subtraction functionality with out using SUB('-') Operator.    
+3. WAP implement addition functionality with out using ADD('+') Operator.   
+4. WAP implement XOR functionality with out using XOR(^) operator.
+5. WAP to implement the sizeof operation using bitwise operator.  
+6. WAP to convert Little endian integer to Big endian integer 
+7. WAP multiply a number by 9 using bit shift.
+8. WAP whether a number is ODD or EVEN using bitwise.
+9. WAP whether a number is power of 2 or not?
+10.WAP to count the bits set (bit value 1 ) in an integer? Find out and compare different possibilities?
+
+11.How would you count the number of bits set in a floating point number?
+12.WAP Check if the 20th bit of a 32 bit integer is on or off?
+12.You are given two numbers A and B. Write a program to count number of bits needed to be flipped to convert A to B.
+13.How to reverse the bits in an interger?
+14.Write a program to reverse
+a. Odd bits of an integer
+b. Even bits of an integer
+
+15.Write a functionsetbits(x,p,n,y)that returns x with then bits that begin at position p set to the rightmost n bits of y, leaving the other bits unchanged.
+
+e.g. if x = 10101010 (170 decimal) and y = 10100111 (167 decimal) and n = 3 and p = 6 then
+you need to strip off 3 bits of y (111) and put them in x at position 10xxx010 to get answer
+10111010. Your answer should print out the result in binary form although input can be in
+decimal form.
+Your output should be like this:
+x = 10101010 (binary)
+y = 10100111 (binary)
+setbits n = 3, p = 6 gives x = 10111010 (binary).
+
+16. Check if a number is zero using bitwise operators.
+
+17. WAP Swap any two numbers using bitwise operators. How it works?
+

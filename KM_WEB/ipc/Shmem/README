@@ -1,0 +1,24 @@
+shared memory arrange for the memory being shared between different processes to be the same physical
+memory.
+
+
+
+1. Allocate segment ---- shmget()
+
+When we first create a shared memory segment, it’s not accessible by any process. To enable access to the
+shared memory, we must attach it to the address space of a process. 
+
+2. Attach Segment    ----shmat()
+
+3. Detach segment   -----shmdt()
+
+
+
+shmat(seg_id,pointer to address space , flag)
+
+shmget(common,1024,create no of bytes)
+
+
+This is done by Admin login only.
+
+

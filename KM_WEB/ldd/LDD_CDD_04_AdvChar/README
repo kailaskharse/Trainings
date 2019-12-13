@@ -1,0 +1,9 @@
+Advanced Character Drivers:
+--------------------------
+
+LDD_CDD_04_01_ioctl: This example shows how to use ioctl system call.
+
+LDD_CDD_04_02_evtest: This example shows how to implement ioctl in evtest app.
+
+LDD_CDD_04_03_BlockingIO: This example shows what is blocking I/O, how to control blocking I/O using proc file system.
+

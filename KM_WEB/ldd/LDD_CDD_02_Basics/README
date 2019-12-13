@@ -1,0 +1,54 @@
+
+Character Device Drivers Notes:
+
+
+Charater Device File (Write followed by read not fetch data)
+Regular File (Write followed by read than data available)
+
+
+1. Application
+     Based on the name of the device file  
+2. Charater Device File (CDF)
+     Based on the no.(major) of the device file
+3. Charater Device Driver (CDD)
+     Based on the h/w protocol
+4. Charater Device (CD)
+
+Major Number and Minor Numbers:
+Major Number: Kernel uniquely identify each device by a number 
+Minor Number: Minor number to distinguish b/w difference pieces of H/W.
+
+2.4 kernel major (8 bit- 256), minor (8bit- 256)
+2.6 kernel major (12 bit- 4K) ,minor (20 bit - 1M)
+
+
+
+Device Files are created by the mknod command:
+----------------------------------------------
+mknod <name_device>  <device_type> <major> <minor> [-m modes]
+
+	Example:
+	mknod /dev/MyCharDevice c 253 15 -m 0666 
+
+The below examples explain How to write a Character Device Driver.
+
+
+LDD_CDD_01: This example explains function pointer basics and how to
+	     initialize a function pointer in a structure.
+
+LDD_CDD_02: This example shows how to write a Character Device Driver 
+	    Template. It is also called as NULL driver /dev/null.
+
+LDD_CDD_03: This example explains how to implement memory driver as 
+	    character device driver and how to transfer data in between 
+	    user space and kernel space. read, write implementation
+
+LDD_CDD_04: This example shows how "register_char" function works.
+	    All the above examples show, how to write a static character device driver.
+
+LDD_CDD_05: This example explains how to write a dynamic character device driver.
+
+LDD_CDD_06: This example explains how to write a Mulitple Character Device Driver.
+
+LDD_CDD_07: This example shows how to create device file automatically.
+

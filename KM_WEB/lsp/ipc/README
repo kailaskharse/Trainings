@@ -1,0 +1,167 @@
+
+IPC syn :  1. Semaphore
+           2. Signal
+
+IPC comm :  MQ,shared memory, Pipe,FIFO,sockets
+
+
+IPC (Inter Process Communication) :
+IPC all about exchanging messages or data between processes.  All the process or threads of the application should co-ordinate among themselves. 
+The co-ordination among process involves three things.
+
+   1. Communication
+   2. Synchonization
+   3. Mutual exclusion
+
+Communication :  
+
+ a. Connection oriented or connection less :  A process can send data without caring for the connection between two process. So sender can send message,even if no receiver is present is connection less mechanism.
+
+    Writing or reading is possible only after connection is established between two processes. Processes should open the connection before reading or writing. 
+
+ b. Message oriented :  Data transfers between processes will happen in units of messages only. Each write operation invovles sending one message and each read operation involved receiving one message. It is not possible to read half message at a time or more than one message at a time. Even if read half message,the remaining half of the message will be lost. Message oriented communication, message boundaries are maintained.
+
+ c. Stream Oriented : Data transfer between processes as streams. Each write operation involves sending one message and each read operation involved receiving many messages and vice - versa. It is possible to read half message at a time.
+
+
+1. Pipes : Between Parent and child.
+2. Name or identifier of communication object : Named fifo.
+     Between any process whose name of identifier should be same.
+Pipe and FIFO is Connection oriented , stream based communication. 
+
+
+Message Queues :  Connection less, message oriented communicaion between process. Basic unit of exchange through message queue is message. We can send messages to MQ even if no other process is waiting for process. 
+
+
+Semaphores :  Semaphore can hold any no of tokens starting from 0 (no tokens) to some maximum limit. Normally semaphore object is created,the initial token count will be specified.
+
+
+A process can perform two types of operations on the semaphores.
+ a.  Taking a token from the semaphore
+ b.  Giving a token to the semaphore
+
+
+When a process calls a system call for taking a token from the semaphore, if there are no token in the semaphore, the process will block(go to pending state) till it get a token. 
+
+   If tokens are present in the semaphore, the system call for taking a token will return successfully and token count in the semaphore will be decremented by one.
+
+   When  process calls a system call for giving a token, the system call returns successfully and troken count in the semaphore will increment by one. If already some process is waiting for a token from that semaphore,then that process will get a token. 
+
+
+
+Use of semaphores : 
+
+  The semaphores are used for synchoronization and mutual exclusion between processes.
+
+
+
+Mutual exclusion :
+
+
+
+During boot time create a printer semaphore with one token in it
+
+  
+
+    i.    Take token from the semaphore
+
+    ii.   Use the printer
+
+    iii.  Give token to the semaphore
+
+
+
+  Only one process can used the semaphore at a time. Every process can call this above code. But only first process will get a token. All other processes will go to Block/pending state. Only when first process gives the token back then only another process will get a token and can use the printer.
+
+
+
+Synchonization : 
+
+
+
+The other use of semaphore is for synchonization. Synchronization is typically required between a producer process and consumer process. 
+
+ Initially the semaphore is created with zero tokens in it. The consumer will block on semaphore for a token. 
+
+The producer produces some data (like request message,page of data of print etc) and sends a token to the semaphore.
+
+ This token wakes up the consumer process. The consumer process now consumes the data supplied by the produer process
+
+
+
+
+
+
+1. Semaphores, for managing access to resources
+2. Shared memory, for highly efficient data sharing between programs
+3. Messaging, for an easy way of passing data between programs
+
+Communication:
+PIPE :   IPC between parent and child
+FIFO :   B/W any process
+
+
+
+Pipes:
+Connection less: A process can send data without caring for the connection between two process. So sender can send message,even if no receiver is present is connection less mechanism.
+Simplest from of IPC.
+Pipe is called as un-named pipe. 
+Can be used in shell.
+
+Advantages:
+No message boundary.
+
+Drawbacks :
+Pipe is useful only among processes related as parent/child.
+Only for related process.
+Can not store data.
+
+Named Pipes (FIFO):
+FIFO is called as named pipe.
+Can store data.
+If there are multiple receivers there is not way to direct the data to particular user.
+
+Advantages:
+Two unrelated processes can use FIFO unlike plain pipe.
+Can be used for non-related processes.
+
+Drawbacks:
+Less secure than pipe, since any process with valid access permission can access them.
+No message boundaries. Data is treated as stream of byte
+
+Message Queues:
+Connection Less: Writing or reading is possible only after connection is established between two processes. Processes should open the connection before reading or writing. 
+Can direct and store data.
+
+
+Advantages:
+Message queue is a dedicated IPC without any file management.
+Message queues and signals can be great for hard real-time applications, but they are not as flexible.
+Effective for small amount of data.
+
+Drawbacks:
+Very expensive for large data, as transferred through kernel buffer and each data transfer involves 2 data copy operations.
+Message queue is a slowest IPC mechanisms.
+Message boundary is defined.
+Message is deleted after reading.
+
+
+Shared Memory:
+
+Fastest communication among all the IPC events.
+No synchronization like pipe or FIFO.
+Race condition is possible so locking is required.
+When next message will come with different id, then the previous message will be deleted.
+
+Advantages:
+This can be a very fast method of information transfer because RAM can be used.
+Data are not removed after reading.
+
+Drawbacks: 
+Synchronization is a major problem - if the first process keeps writing data, how can it ensure that the second one reads it?
+Data can either read or written only. Append is not possible.
+
+
+Sockets:
+Sockets are more like ports that you can send data to. A process will be ``listening'' at a port and will accept data sent to it.
+

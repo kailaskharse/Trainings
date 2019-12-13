@@ -1,0 +1,47 @@
+Storeage Classes - Variable Scoping:
+-----------------------------------
+
+Storage Specifier 	Storage place	Initial / default value		Scope 		Life
+----------------------------------------------------------------------------------------------------------------------------------------------
+auto			CPU Memory	Garbage value			local		Within the function only.
+extern			CPU memory	Zero				Global		Till the end of the main program.
+											Variable definition might be anywhere in the C program
+static			CPU memory	Zero				local		Retains the value of the variable
+											between different function calls.
+register		Register memory	Garbage value			local		Within the function
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+scope1.c: local varaibles (auto) . Default initalization value: Garbage value 
+register : Default initalization value: Garbage value 
+scope2.c,scope3.c: global variables. Default initalization value: 0 
+static1.c,static2.c: static variables. Default initalization value: 0 
+
+The backtrace also shows the nested function calls by looking at records kept on the stack. Each time a function is called, a record called a stack frame is put on the stack. 
+Each line in the backtrace corresponds to a stack frame. 
+Each stack frame also contains the local variables for that context. The local variables contained in each stack frame can be shown in GDB by adding the word full to the backtrace command.
+(gdb) bt full
+#0 func3 () at scope3.c:7
+i = 11
+j = 999
+#1 0x0804841d in func2 () at scope3.c:17
+i = 7
+#2 0x0804849f in func1 () at scope3.c:26
+i = 5
+#3 0x0804852b in main () at scope3.c:35
+i = 3
+(gdb)
+
+static Variable:
+---------------
+In addition to globals, variables can also be defined as static variables by prepending the keyword static to the variable definition. Similar to global variables, a static variable remains intact between function calls;
+however, static variables are also akin to local variables since they remain local within a particular function context. 
+One different and unique feature of static variables is that they are only initialized once.
+
+1. Static global variables declared at the top level of the C source file have the scope that they can not be visible external to the source file. The scope is limited to that file.
+
+2. Static local variables declared within a function or a block, also known as local static variables, have the scope that, they are visible only within the block or function like local variables. 
+
+3. The values assigned by the functions into static local variables during the first call of the function will persist / present / available until the function is invoked again
+
