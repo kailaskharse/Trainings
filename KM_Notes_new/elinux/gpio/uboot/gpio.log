@@ -1,0 +1,17 @@
+KM=> gpio input 11
+
+--------------------------------------------
+
+cmd/gpio.c:do_gpio:131
+
+
+----------------------------------------------------
+drivers/gpio/omap_gpio.c:omap_gpio_direction_input:241
+
+
+drivers/gpio/omap_gpio.c:_set_gpio_direction:61
+
+drivers/gpio/omap_gpio.c:omap_gpio_get_value:265
+drivers/gpio/omap_gpio.c:_get_gpio_value:113
+drivers/gpio/omap_gpio.c:_get_gpio_direction:81
+gpio: pin 11 (gpio 11) value is 1

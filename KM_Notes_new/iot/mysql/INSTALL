@@ -1,0 +1,101 @@
+
+Install LAMP (Linux, Apache, Mysql and PHP)
+------------------------------------------
+
+Install Apache
+---------------------
+$ sudo apt-get install apache2
+
+*****************************************************************************************************************
+
+Install Mysql :
+---------------
+Step 1 — Installing MySQL:
+-------------------------
+$ sudo apt-get update
+$ sudo apt-get install mysql-server
+
+You'll be prompted to create a root password during the installation. Choose a secure one and make sure you remember it, because you'll need it later. Move on to step two from here.
+
+Step 2 — Configuring MySQL:
+--------------------------
+$ sudo mysql_secure_installation
+This will prompt you for the root password you created in step one. You can press ENTER to accept the defaults for all the subsequent questions, with the exception of the one that asks if you'd like to change the root password. You just set it in step one, so you don't have to change it now.
+
+
+$ mysql --version
+mysql  Ver 14.14 Distrib 5.5.54, for debian-linux-gnu (x86_64) using readline 6.3
+
+If you're using a version of MySQL earlier than 5.7.6, you should initialize the data directory by running mysql_install_db.
+
+$ sudo mysql_install_db
+ 
+Step 3 - Testing MySQL:
+----------------------
+$ service mysql status
+You'll see the following output (with a different PID).
+mysql start/running, process 1073
+ 
+$ mysqladmin -p -u root version
+Enter password:
+mysqladmin  Ver 8.42 Distrib 5.5.54, for debian-linux-gnu on x86_64
+Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Server version          5.5.54-0ubuntu0.14.04.1
+Protocol version        10
+Connection              Localhost via UNIX socket
+UNIX socket             /var/run/mysqld/mysqld.sock
+Uptime:                 23 hours 57 min 7 sec
+
+Threads: 1  Questions: 445  Slow queries: 0  Opens: 154  Flush tables: 1  Open tables: 147  Queries per second avg: 0.005
+
+
+This means MySQL is up and running.
+
+******************************************************************************************************************
+Install PHP:
+-------------
+$ sudo apt-get install mysql-server libapache2-mod-auth-mysql php5-mysql
+$ sudo apt-get install php5 libapache2-mod-php5 php5-mcrypt
+
+
+**********************************************************************************************************
+Install phpMyAdmin:
+-------------------
+$ sudo apt-get install phpmyadmin apache2-utils
+During the installation, phpMyAdmin will walk you through a basic configuration. Once the process starts up, follow these steps:
+
+- Select Apache2 for the server
+- Choose YES when asked about whether to Configure the database for phpmyadmin with dbconfig-common
+- Enter your MySQL password when prompted
+- Enter the password that you want to use to log into phpmyadmin
+
+After the installation has completed, add phpmyadmin to the apache configuration.
+sudo nano /etc/apache2/apache2.conf
+
+Add the phpmyadmin config to the file.
+Include /etc/phpmyadmin/apache.conf
+
+Restart Apache:
+---------------
+$ sudo service apache2 restart
+
+Accessing phpMyAdmin:
+--------------------
+phpMyAdmin will now be much more secure since only authorized users will be able to reach the login page. 
+Type in URL <YOUR_IP_ADDRESS>/phpmyadmin should display login page.
+
+*****************************************************************************************************************
+
+$ sudo apt-get install libmysqlclient-dev
+$ gcc server1.c -I /usr/include/mysql/ -L /usr/lib/mysql/ -lmysqlclient
+
+
+mysql database commands:
+-----------------------
+> show databases;
+> 

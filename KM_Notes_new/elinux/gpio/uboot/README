@@ -1,0 +1,38 @@
+LED Porting on BBB:
+==================
+GPIO pin 10 interface with LED. 
+
+PAD Configuration:
+=================
+GPIO PIN 10 - Primary func LCD_DATA14. 
+
+Control Module regiser base address is 		0x44E10000H 
+	LCD_DATA14 base address is 		0x000008D8H
+------------------------------------------------------------
+Physical address of PAD CONTROL Register is: 	0x44E108D8H
+-------------------------------------------------------------
+
+
+Control GPIO PINS from u-boot command prompt:
+============================================
+=> gpio set 10 (LED ON) 
+=> gpio clear 10 (LED OFF) 
+
+***********************************************************************************
+
+KEY Porting on BBB:
+==================
+GPIO pin 11 interface with Key. 
+
+PAD Configuration:
+=================
+GPIO PIN 11 - Primary func LCD_DATA15. 
+
+COntrol Module regiser base address is 		0x44E10000H 
+	LCD_DATA14 base address is 		0x000008DCH
+------------------------------------------------------------
+Physical address of PAD CONTROL Register is: 	0x44E108DCH
+-------------------------------------------------------------
+Input Mode: 0x27 pulldown, 0x37 pullup
+
+=> gpio input 11

@@ -1,0 +1,97 @@
+What is Device Tree? Atags?How uboot pass the hardware information to the kernel?
+--------------------------------------------------------------------------------- 
+
+Approach 1: ATAGS (Before the Device Tree):
+-------------------------------------------
+The kernel contains the entire description of the hardware.
+The bootloader loads a single binary, the kernel image, and executes it. uImage or zImage
+
+        a) ATAGS interface.  Minimal information is passed from firmware
+        to the kernel with a tagged list of predefined parameters.
+
+                r0 : 0
+
+                r1 : Machine type number
+
+                r2 : Physical address of tagged list in system RAM
+
+The bootloader prepares some additional information, called ATAGS, which address is passed to the kernel through register r2 Contains information such as memory size and location, kernel
+command line, etc.
+
+The bootloader tells the kernel on which board it is being booted through a machine type integer, passed in register r1.
+
+U-Boot command: bootm <kernel img addr>
+Barebox variable: bootm.image
+
+Approach 2: (Booting with Device Tree):
+--------------------------------------
+The kernel no longer contains the description of the hardware, it is located in a separate binary: the device tree blob
+The bootloader loads two binaries: the kernel image and the DTB.
+Kernel image remains uImage or zImage
+
+Device Tree (DT), is a data structure and language for describing hardware.  More specifically, it is a description of hardware that is readable by an operating system so that the operating system doesn't need to hard code details of the machine.
+
+        b) Entry with a flattened device-tree block.  Firmware loads the
+        physical address of the flattened device tree block (dtb) into r2,
+        r1 is not used, but it is considered good practice to use a valid
+        machine number as described in Documentation/arm/Booting.
+
+                r0 : 0
+
+                r1 : Valid machine type number.  When using a device tree,
+                a single machine type number will often be assigned to
+                represent a class or family of SoCs.
+		http://www.arm.linux.org.uk/developer/machines/
+
+                r2 : physical pointer to the device-tree block
+                (defined in chapter II) in RAM.  Device tree can be located
+                anywhere in system RAM, but it should be aligned on a 64 bit
+                boundary.
+
+DTB located in arch/arm/boot/dts, one per board
+
+The bootloader passes the DTB address through r2. It is supposed to adjust the DTB with memory information, kernel command line, and potentially other info.
+
+No more machine type.
+U-Boot command:
+boot[mz] <kernel img addr> - <dtb addr>
+
+   The kernel will differentiate between ATAGS and device tree booting by
+   reading the memory pointed to by r2 and looking for either the flattened
+   device tree block magic value (0xd00dfeed) or the ATAG_CORE value at
+   offset 0x4 from r2 (0x54410001).
+
+
+
+Device Tree Implementation on pandaboard:
+----------------------------------------
+Download Device tree support omap linux kernel:
+----------------------------------------------
+$ git clone git@192.168.1.6:emblinux/linux-3.10-dts.git
+
+
+We can now boot with device tree. If you don't want to update u‐boot,
+you can boot with appended DTB with the following instructions:
+
+1. Make sure you have the appended DTB support in .config
+   CONFIG_ARM_APPENDED_DTB=y
+   CONFIG_ARM_ATAG_DTB_COMPAT=y
+   CONFIG_ARM_ATAG_DTB_COMPAT_CMDLINE_EXTEND=y
+2. Build the zImage
+   $ ARCH=arm CROSS_COMPILE=... make zImage
+3. Build the device tree blobs
+   $ ARCH=arm CROSS_COMPILE=... make dtbs
+4. Append the correct panda dtb to zImage
+   Depending on your hardware it's omap4‐panda.dtb, omap4‐panda‐a4.dtb
+   or omap4‐panda‐es.dtb.
+   $ cat arch/arm/boot/zImage arch/arm/boot/dts/omap4‐panda‐es.dtb > /tmp/appended
+5. Use mkimage to produce the appended device tree uImage
+   $ mkimage ‐A arm ‐O linux ‐T kernel ‐C none ‐a 0x80008000 ‐e 0x80008000 \
+     ‐n "Linux" ‐d /tmp/appended /tmp/uImage
+
+Passing address of dtb at u-boot level
+--------------------------------------
+copy dtb file in sdcard boot partition
+# fatload mmc 0 0x815f0000 omap4-panda-es.dtb
+
+# bootm 0x80000000 - 0x815f0000

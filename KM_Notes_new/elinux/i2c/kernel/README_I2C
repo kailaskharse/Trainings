@@ -1,0 +1,29 @@
+I2C Kernel Functions & Data Structures:
+---------------------------------------
+
+i2c_smbus_read_byte() Reads a single byte from the device without specifying a location offset. Uses the same offset as the previously issued command.
+i2c_smbus_write_byte() Sends a single byte to the device at the same memory offset as the previously issued command.
+i2c_smbus_write_quick() Sends a single bit to the device (in place of the Rd/Wr bit shown in Listing 8.1).
+i2c_smbus_read_byte_data() Reads a single byte from the device at a specified offset.
+i2c_smbus_write_byte_data() Sends a single byte to the device at a specified offset.
+i2c_smbus_read_word_data() Reads 2 bytes from the specified offset.
+i2c_smbus_write_word_data() Sends 2 bytes to the specified offset.
+i2c_smbus_read_block_data() Reads a block of data from the specified offset.
+i2c_smbus_write_block_data() Sends a block of data (<= 32 bytes) to the specified offset.
+
+
+i2c_driver			include/linux/i2c.h 		Representation of an I2C driver
+i2c_client_address_data 	include/linux/i2c.h		Slave addresses that an I2C client driver is responsible for
+i2c_client 			include/linux/i2c.h 		Identifies a chip connected to an I2C bus
+i2c_msg 			include/linux/i2c.h 		Information pertaining to a transaction that you want to generate on the I2C bus
+
+i2c_add_driver() 		include/linux/i2c.h 		Registers driver entry points drivers/i2c/i2c-core.c with the I2C core.
+i2c_del_driver() 		drivers/i2c/i2c-core.c 		Removes a driver from the I2C core.
+i2c_probe() 			drivers/i2c/i2c-core.c 		Specifies the addresses of slave devices that the driver is responsible for and an associated attach() routine to be invoked if one of the specified addresses is detected by the I2C core.
+i2c_attach_client() 		drivers/i2c/i2c-core.c 		Adds a new client to the list of cients serviced by the associated I2C host adapter.
+i2c_detach_client() 		drivers/i2c/i2c-core.c 		Detaches an active client.Usually done when the client driver or the associated host adapter unregisters.
+i2c_check_functionality() 	include/linux/i2c.h 		Verifies whether a particular function is supported by the host adapter.
+i2c_get_functionality() 	include/linux/i2c.h 		Obtains a mask containing all functions supported by the host adapter.
+i2c_add_adapter() 		drivers/i2c/i2c-core.c 		Registers a host adapter.
+i2c_del_adapter() 		drivers/i2c/i2c-core.c 		Unregisters a host adapter.
+i2c_transfer() drivers/i2c/i2c-core.c Sends an i2c_msg over the I2C  bus. This function is not SMBus-compatible.

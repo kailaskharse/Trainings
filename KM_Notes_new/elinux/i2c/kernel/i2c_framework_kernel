@@ -1,0 +1,99 @@
+I2C Framework in Kernel Space:
+-----------------------------
+
+Step1: Study I2C Comm protocol basics, AM3358 I2C Controller funional block diagram and register programming model.
+Step2: Identify the source code. 
+
+drivers/i2c/i2c-dev.c
+drivers/i2c/i2c-core.c
+drivers/i2c/busses/i2c-omap.c
+
+
+Step3: Framework implementation
+-------------------------------
+3a: I2C Initalization (Bottom to top):
+1. get the platform data or device data from board specifile source code or device tree.
+       reg = <0x4802a000 0x1000>;
+       interrupts = <71>;
+2. Interrupt registration  (request_irq)
+            r = devm_request_irq(&pdev->dev, dev->irq, omap_i2c_omap1_isr,
+                                IRQF_NO_SUSPEND, pdev->name, dev);
+$ cat /proc/interrupts
+87:         23      INTC  71  4802a000.i2c
+
+3. memory mapped I/O allocation (ioremap)
+        dev->base = devm_ioremap_resource(&pdev->dev, mem);
+$ cat /proc/iomem
+4802a000-4802afff : /ocp/i2c@4802a000
+
+4. "i2c_algorithm" strutcure initalization for communicate i2c-core.c file i.e., high level layer.
+static const struct i2c_algorithm omap_i2c_algo = {
+        .master_xfer    = omap_i2c_xfer,
+        .functionality  = omap_i2c_func,
+};
+
+
+
+
+
+
+3b: I2C Operation (Top to Bottom)
+
+~ # ./i2c_app  r 00 1
+
+************************************************************************************
+I2C_DEBUG_CORE
+[   79.832136] i2c i2c-1: ioctl, cmd=0x705, arg=0x8ccdc
+[   79.832198] i2c i2c-1: ioctl, cmd=0x703, arg=0x68
+[   79.832251] i2c i2c-1: ioctl, cmd=0x720, arg=0xbeeaabdc
+I2C_DEBUG_ALGO
+[   79.832301] i2c i2c-1: master_xfer[0] W, addr=0x68, len=1
+[   79.832336] i2c i2c-1: master_xfer[1] R, addr=0x68, len=1
+I2C_DEBUG_BUS
+[   79.832473] omap_i2c 4802a000.i2c: addr: 0x0068, len: 1, flags: 0x0, stop: 0
+[   79.832665] omap_i2c 4802a000.i2c: IRQ (ISR = 0x0010)
+0x0010  -- XRDY
+[   79.832925] omap_i2c 4802a000.i2c: IRQ (ISR = 0x0004)
+0x0004  -- ARDY
+[   79.833091] omap_i2c 4802a000.i2c: addr: 0x0068, len: 1, flags: 0x1, stop: 1
+[   79.833369] omap_i2c 4802a000.i2c: IRQ (ISR = 0x0008)
+0x0008 --  RRDY
+[   79.833406] omap_i2c 4802a000.i2c: IRQ (ISR = 0x0004)
+0x0004  -- ARDY
+************************************************************************************
+
+
+
+The value read from the register is 229
+
+---------------------------------------------------------------
+
+[  208.195251] drivers/i2c/i2c-dev.c:i2cdev_open:494
+[  208.200317] drivers/i2c/i2c-dev.c:i2cdev_ioctl:420 (I2C_FUNC)
+[  208.205383] drivers/i2c/i2c-dev.c:i2cdev_ioctl:420 (I2C_SLAVE)
+[  208.210479] drivers/i2c/i2c-dev.c:i2cdev_ioctl:420 (I2C_SMBUS)
+[  208.215545] drivers/i2c/i2c-dev.c:i2cdev_ioctl_smbus:336
+[  208.221191] drivers/i2c/i2c-core.c:i2c_smbus_xfer:2157
+[  208.226593] drivers/i2c/i2c-core.c:i2c_smbus_xfer_emulated:1976
+[  208.232879] drivers/i2c/i2c-core.c:i2c_transfer:1368
+[  208.238128] drivers/i2c/i2c-core.c:__i2c_transfer:1337
+
+-----------------------------------------------------------------------
+[  208.243591] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer:646:
+[  208.249603] drivers/i2c/busses/i2c-omap.c:__omap_i2c_init:283:
+[  208.255767] drivers/i2c/busses/i2c-omap.c:omap_i2c_wait_for_bb:464:
+[  208.262420] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:527:
+[  208.268768] drivers/i2c/busses/i2c-omap.c:omap_i2c_resize_fifo:481:
+[  208.275482] drivers/i2c/busses/i2c-omap.c:omap_i2c_transmit_data:861:
+[  208.282287] drivers/i2c/busses/i2c-omap.c:omap_i2c_transmit_data:883: ***** DATA:0 *****
+[  208.290924] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:527:
+[  208.297271] drivers/i2c/busses/i2c-omap.c:omap_i2c_resize_fifo:481:
+[  208.304016] drivers/i2c/busses/i2c-omap.c:omap_i2c_receive_data:837:
+[  208.310729] drivers/i2c/busses/i2c-omap.c:omap_i2c_receive_data:840: ***** DATA:229 *****
+[  208.319427] drivers/i2c/busses/i2c-omap.c:omap_i2c_wait_for_bb:464:
+
+
+
+
+
+

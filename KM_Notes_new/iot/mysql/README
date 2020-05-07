@@ -1,0 +1,39 @@
+
+
+Install mysql API'S:
+------------------
+$ sudo apt-get install libmysqlclient-dev
+
+Verfication:
+-----------
+$ mysql_config --libs
+-L/usr/lib/x86_64-linux-gnu -lmysqlclient -lpthread -lz -lm -ldl
+
+$ mysql_config --cflags
+-I/usr/include/mysql -DBIG_JOINS=1  -fno-strict-aliasing    -g -DNDEBUG
+
+
+$ gcc server1.c -I /usr/include/mysql/ -L /usr/lib/mysql/ -lmysqlclient
+
+
+mysql commands:
+---------------
+Enter mysql command line:
+$ mysql -u root -p 
+
+> show databases;
+>
+
+Issue 1: Host '192.168.1.21' is not allowed to connect to this MySQL server.
+
+Soultion:
+It has to contain a line with your database user and '%' to works (% means "every IP addresses are allowed"). Example:
++------------+------------------+
+| host       | user             |
++------------+------------------+
+| %          | root             |
++------------+------------------+
+
+My root user can connect itself from any IP addresses.
+
+

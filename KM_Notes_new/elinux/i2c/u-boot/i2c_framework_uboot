@@ -1,0 +1,41 @@
+I2C Framework in u-boot source code:
+-----------------------------------
+Step1: Study I2C basics & Study OMAP I2C Controller block diagram, specifications & register programming model.
+
+Step2: Identify I2C Driver Source code in u-boot:
+-------------------------------------------------
+search I2C keywords in uboot configuration files.
+
+
+common/cmd_i2c.c
+drivers/i2c/omap24xx_i2c.c
+
+
+
+Step3: Prepare I2C Source code flow: (Use Debugging Techniques)
+------------------------------------
+Basic Debugging Mechanisum is prints. 
+Enable printf() statement inside each and every function.
+
+Run application and collect the logs.
+
+
+KM# i2c md 0x68 0x00 0x01
+
+
+---------------------------------------------------------
+
+common/i2c.c
+
+do_i2c_md()
+
+
+
+
+drivers/i2c/omap24xx_i2c.c
+
+
+
+
+
+

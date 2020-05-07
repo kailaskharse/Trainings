@@ -1,0 +1,83 @@
+What is MQTT?
+============
+MQTT (formerly Message Queue Telemetry Transport) is an ISO standard (ISO/IEC PRF 20922) publish-subscribe based "light weight" messaging protocol for use on top of the TCP/IP protocol. It is designed for connections with remote locations where a "small code footprint" is required or the network bandwidth is limited.
+
+What is Mosquitto?
+=================
+Mosquitto is an open source (EPL/EDL licensed) message broker that implements the MQTT protocol versions 3.1 and 3.1.1. MQTT provides a lightweight method of carrying out messaging using a publish/subscribe model.
+
+What is CoAP?
+============
+CoAP is an application layer protocol that is intended for use in resource-constrained internet devices, such as WSN nodes. CoAP is designed to easily translate to HTTP for simplified integration with the web, while also meeting specialized requirements such as multicast support, very low overhead, and simplicit.
+
+Step 1: Install mosquitto-clients (mosquitto_pub, mosquitto_sub)
+----------------------------------------------------------------
+$ sudo apt-get install mosquitto-clients
+
+The default host:port combination for mosquitto_pub/sub is localhost:1883. If you do not have a broker running on your local computer then it will not be able to connect of course.
+
+Testing:
+-------
+Now localhost pub & sub not working because mosquitto is not installed in local machine.
+$ mosquitto_sub -t newtopic/test -h localhost
+Error: Connection refused
+
+But it works fine give host address is where mosquitto running.
+$ mosquitto_sub -t newtopic/test -h test.mosquitto.org
+
+Step 2: Install mosquitto broker & MQTT C libraries in local machine 
+--------------------------------------------------------------------
+$ mkdir ~/mosquitto
+$ cd ~/mosquitto
+$ wget https://mosquitto.org/files/source/mosquitto-1.4.15.tar.gz
+$ tar -xvf mosquitto-1.4.15.tar.gz
+$ cd mosquitto-1.4.15
+$ sudo apt-get install build-essential libwrap0-dev libssl-dev libc-ares-dev uuid-dev xsltproc
+$ sudo make install
+
+copy the below line in ~/.bashrc file
+export LD_LIBRARY_PATH=/usr/local/lib
+
+run mosquitto on local machine.
+$ mosquito 
+
+Testing:
+-------
+Now local host pub & sub running successfully
+$ mosquitto_sub -d -t newtopic/test -h localhost 
+$ mosquitto_sub -d -t newtopic/test -h localhost -m hello
+
+
+This step needed Ubuntu 14.04:
+------------------------------
+$ mkdir ~/mosquitto
+$ cd ~/mosquitto
+$ wget https://mosquitto.org/files/source/mosquitto-1.4.15.tar.gz
+$ tar -xvf mosquitto-1.4.15.tar.gz
+$ cd mosquitto-1.4.15
+$ sudo apt-get install build-essential libwrap0-dev libssl-dev libc-ares-dev uuid-dev xsltproc
+$ sudo make install
+
+copy the below line in ~/.bashrc file
+export LD_LIBRARY_PATH=/usr/local/lib
+
+3. Install Mosquitto developer libraries to develop MQTT clients
+	Add the mosquitto repository by given below commands
+	$sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+	$sudo apt-get update
+    Execute the given below command to install Mosquitto client packages
+	$ sudo apt-get install mosquitto-clients
+
+4. Ensure that Mosquitto broker is running
+	$ sudo service mosquitto status 
+
+	$ mosquitto_pub -h localhost -t "mqtt" -m "Hello MQTT"
+	$ mosquitto_sub -h localhost -t "mqtt" -v
+
+How to install libmosquitto-dev @ ARM Boards:
+--------------------------------------------
+$ sudo apt-get install libc-ares2
+$ sudo dpkg --install mosquitto1_1.3.4-2_armhf.deb
+$ sudo dpkg --install libmosquitto1_1.3.4-2+deb8u1_armhf.deb
+$ sudo dpkg --install --auto-deconfigure libmosquitto-dev_1.3.4-2_all.deb
+

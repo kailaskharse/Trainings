@@ -1,0 +1,331 @@
+               DEVICE DRIVER TESTS (DDT) for embedded linux
+================================================================================
+
+1) GOALS:
+================================================================================
+ * Validate the functionality, performance and stability of Device Drivers
+   on embedded Linux systems.
+ * Validate performance and stability of the whole embedded system.
+ * Maximize use of open source software and contribute to improve it.
+ * Maximize code reuse across different platforms.
+ * Make it easy to support new embedded platforms.
+
+2) ARCHITECTURE HIGHLIGHTS:
+================================================================================
+ * Based on LTP http://ltp.sourceforge.net/
+ * Support dynamic selection/filtering of test cases based on platform
+ * Support test parameters overrides based on platform
+
+3) HOW TO ADD NEW DDT TESTS:
+================================================================================
+ You only need to add files to two directories:
+ testcases/ddt: Contains the test logic files (either c code or shell script)
+ runtest/ddt  : Contains the test scenario files. It calls the test logic files.
+ 
+ * If your tests requires compiling c sources, create following directory 
+   testcases/ddt/<your sources dir name>/
+   Add your c sources to the directory created above and make sure that you have
+   a top level Makefile. (Check Makefile of existing directories for examples)
+   Please note that you don't need to add c sources for external tools (such as 
+   iperf, lmbench, etc.), instead external tools should be added to the OE/Arago
+   recipe that builds the test filesystem image.
+ * If your tests use shell scripts, add the shell scripts to the
+   testcases/ddt/scripts/ directory
+ * Write a new test scenario file under runtest/ddt/. Also add a new line with
+   the name of your new scenario file to scenario_groups/default-ddt.
+
+4) DDT TESTS IMPLEMENTATION GUIDELINES
+================================================================================
+4.1) TEST CASES
+ * Write you test code using c and/or linux shell scripts.
+ * Beware that the linux shell script should be compatible with the ash shell
+   available in busybox.
+ * Avoid hard-coding values that are specific to your platform, instead try to 
+   determine the right value to use using the information provided by Linux
+   ( /sys and proc/ are your friends)
+ * When not possible to determine values dynamically, define default values and
+   provide appropriate overrides based on either ARCH, DRIVER, SOC or MACHINE.
+   Try to define the override value at the most generic level possible.
+   ARCH, DRIVER, SOC and MACHINE variables are exported by ltprun script. 
+ * Avoid adding logic to define values dynamically in your c code. If the code
+   needs to use different values depending on the platform being tested, then
+   make that value a command line argument and write a shell script wraper
+   that calls your c executable. The shell script wrapper should use the
+   override logic define above to determine the right value to pass to the 
+   c executable.
+ * Use the default shell script template available at 
+   testcases/ddt/scripts/TEMPLATE as a starting point to develop your script.
+ * Instead of developing huge shell scripts, try to partition the logic into
+   several smaller scripts, each such smaller script should execute some 
+   well-defined task and ideally could be used by other people developing 
+   tests. Before you start writing scripts, check the available scripts to see
+   if the logic you need is already available. Scripts that return a value are 
+   named get_*
+ * If your script return a single value, use echo to return the value. If your 
+   script need to return multiple values, consider breaking it into smaller 
+   scripts. If absolutely necessary to return multiple values then write the 
+   name=value pairs (one per line) to file descriptor 10. 
+   See testcases/ddt/scripts/TEMPLATE for an example.
+   
+
+4.2) TEST SCENARIOS
+ * Follow LTP guidelines. The test scenario file is basically made of one or 
+   more test step lines. Each test step line have following format
+   <TAG> <COMMANDS>, where
+   TAG is a string that identifies the test step.
+     Use following convention to named TAGs so that the test cases can be 
+     selectively run based on AREA, SCOPE and/or TYPE.  
+     <AREA>_<SCOPE>_<TYPE>_<OPT_ID>,
+      i.e. “NAND_S_FUNC_RW_8K”, “NAND_M_PERF_ALL-SIZES” 
+     The SCOPE tags are used to indicate the amount of time require to run
+     the tests, giving users ability to filter test cases based on estimated
+     execution time.
+     SCOPE TAGS:
+      'XS', 'S', 'M', 'L', 'XL', 'XXL' (for eXtra Small, Small, Medium, etc.
+		     Just imagine you are buying clothes ;)
+      We used the following rough guidelines to determine test duration based 
+      on scope:
+        XS:  <= 1  min
+        S:   <= 10 mins
+        M:   <= 1  hour
+        L:   <= 8  hours
+        XL:  <= 24 hours
+        XXL: <= 1  week
+     TYPE TAGS:
+      ‘FUNC’, ‘PERF’, ‘STRESS’, ‘USECASE’, ‘COMPLIANCE’, ‘MODULAR’, ‘DOC’
+   COMMANDS is a list of one or more shell commands separated by semicolon (;),
+     the test step will pass if the commands return zero, otherwise it fails.
+
+ * Use the default test scenario file template available at
+   runtest/ddt/TEMPLATE as a starting point to develop your test scenario.
+
+ * Use the @requires annotation to specify ARCH, DRIVER, SOC and/or MACHINE 
+   requirements to run the test scenario. You can use (), &&, ||, * to specify
+   the test requirements. Examples:
+   
+   @requires /net/eth/* && spi_master
+   To run this test the platform must have an ethernet driver and a 
+   spi_master driver
+
+   @requires am3517-evm
+   This test can only be run on an am3517 EVM.
+
+   @requires (mmc_host || nand) && armv*
+   This test requires mmc or nand drivers and an ARM architecture
+
+ * Use the @setup_requires annotation to specify test setup requirements.
+   Some test cases like USB and Video capture requires special peripherals, such as 
+   USB flash drives, DVD players, video cameras, etc., to be connected to the DUT.
+   Using @setup_requires the test developer highlights such test setup requirements. 
+   This information might be used by test automation frameworks to allocate test requests
+   to DUTs that have the appropriate peripherals connected to them.
+   Please follow the naming conventions identified in section 9) of this document
+   if the test scenario needs to identify any setup requirements.
+
+   You can use underscore(_) to seperate multiple @setup_requires. Examples:
+
+   @setup_requires usbhostvideo_usbhostaudio
+   This test requires usbhostvideo setup and usbhostaudio setup.
+ 
+5) HOW TO ADD NEW PLATFORMS
+================================================================================
+ * Copy the default platform file available at platforms/TEMPLATE to 
+   platforms/<your platform>. <your platform> name is typically the evm name
+ * Please use the following names for platform files and to compare against 
+   $MACHINE when writing ltp-ddt scripts:
+
+    am180x-evm   arago-armv7         dm355-evm    dm814x-evm
+    am181x-evm   dm365-evm           dm816x-evm
+    am3517-evm   beagleboard         dm368-evm    
+    am37x-evm    c6a814x-evm         dm37x-evm    omap3evm
+    am387x-evm   c6a816x-evm         dm6446-evm   tnetv107x-evm
+    am389x-evm   da830-omapl137-evm  dm6467-evm   am335x-evm
+    arago-armv5  da850-omapl138-evm  dm6467t-evm  beaglebone
+
+ * Modify your platform file based on the capabilities supported by the new evm
+   The platform file identifies the architecture, the SoC, the evm and the
+   supported drivers. The supported drivers lines follow a variation of the
+   hierarchy used in /sys/class but it is not exactly the same. Hence it is 
+   important to use the platforms/TEMPLATE file as your starting point.
+   Please note the first 3 lines of the platform file MUST identify, the 
+   architecture, SoC and EVM respectively, follow by one or more driver lines.
+   Typically the architecture and machine name used in the platform file are
+   the ones reported by uname -a.
+   Sample platform file:
+    armv7l
+    am3517
+    am3517-evm
+    net/eth/davinci_emac
+    nand/omap2-nand
+    ehci/ehci-omap
+    i2c-adapter/i2c_omap
+    mmc_host/mmci-omap-hs
+    rtc/rtc-s35390a
+    watchdog/omap_wdt
+    ...
+ * You might need to define new override values for your new platform in some
+   test case files (see section 4.1 above for details). A reasonable strategy
+   is to try to run an existing test plan and then analyze the test failures
+   to determine probable test cases where you need to define override values.  
+
+6) Building LTP-DDT
+================================================================================
+
+6.1) Environment Setup for LTP-DDT build
+================================================================================
+ In order to cross compile LTP-DDT, a cross-compiler tool-chain is required.
+ We typically use either Linaro Toolchain or Arago Toolchain.
+ To Install Linaro toolchain, please see http://arago-project.org/wiki/index.php/Setting_Up_Build_Environment#Cross-compile_toolchain
+ To Install Arago toolchain:
+ wget and untar http://software-dl.ti.com/sdoemb/sdoemb_public_sw/arago_toolchain/2011_09/exports/arago-2011.09-armv7a-linux-gnueabi-sdk.tar.bz2 
+ Set the environment variable PATH to contain the binaries of the toolchain cross-compiler tool-chain.
+     For example, in bash: 
+	     $ export PATH=/opt/arago-2011.09/armv7a/bin:$PATH 
+ Test if PATH is set properly by running following command 
+  * For Arago Toolchain
+    $ arm-arago-linux-gnueabi-gcc -v
+  * For Linaro Toolchain
+    $ arm-linux-gnueabihf-gcc -v
+
+6.2) HOW TO CROSS-COMPILE AND INSTALL
+================================================================================
+ Note: CROSS_COMPILE may be set differently than the examples showing in this section.
+   for Arago Toolchain: CROSS_COMPILE=arm-none-linux-gnueabi-;
+   for Linaro Toolchain: CROSS_COMPILE=arm-linux-gnueabihf-
+
+ == Checks before compilation ==
+ * Update testcases/ddt/alsa_test_suite/Makefile with alsa include and 
+   lib paths.
+   For example:
+	  ALSA_INCPATH=/home/useraccount/usr/include
+	  ALSA_LIBPATH=/home/useraccount/usr/lib
+   (In case the filesystem does not contain ALSA include and lib refer step 7 
+    for installation)
+    NOTE: Alternatively instead of updating the Makefile user can supply 
+          ALSA_INCPATH and  ALSA_LIBPATH as arguements to make 
+ * cd to kernel diretory and then do headers_install in kernel install directory
+       e.g.
+        $cd linux-xx.xx.xx.xx
+        $make CROSS_COMPILE=arm-none-linux-gnueabi- distclean
+        $make CROSS_COMPILE=arm-none-linux-gnueabi- headers_install
+
+ == Builds steps ==
+make autotools
+
+export CROSS_COMPILER=arm-linux-gnueabihf-
+export CC=${CROSS_COMPILER}gcc
+export LD=${CROSS_COMPILER}ld
+export AR=${CROSS_COMPILER}ar
+export STRIP=${CROSS_COMPILER}strip
+export RANLIB=${CROSS_COMPILER}ranlib
+
+./configure --host=arm-linux-gnueabihf
+
+make SKIP_IDCHECK=1 KERNEL_USR_INC=/opt/lcpd/git_repos/ti-linux-kernel/usr/include CROSS_COMPILE=arm-linux-gnueabihf- clean
+
+make SKIP_IDCHECK=1 KERNEL_USR_INC=/opt/lcpd/git_repos/ti-linux-kernel/usr/include CROSS_COMPILE=arm-linux-gnueabihf-
+
+ == Install Step ==
+   $ sudo make DESTDIR=<destination directory> SKIP_IDCHECK=1 PLATFORM=<Platform name> install
+   For example:
+   $sudo make DESTDIR=/opt/filesystem/home/root/ltp-ddt-install SKIP_IDCHECK=1 PLATFORM=am335x-evm install
+
+For more information about autotools, please check the tutorial to GNU MAKE tools
+http://www.gnu.org/software/automake/manual/html_node/index.html#SEC_Contents
+
+7) HOW TO INSTALL ALSA INCLUDES AND LIBS
+   Install following packages on to your filesystem
+       	alsa-dev (e.g. alsa-dev_1.0.18-r0.1_armv5te.ipk)
+	alsa-lib-dev (e.g. alsa-lib-dev_1.0.18-r0.1_armv5te.ipk)
+	libasound2 (e.g. libasound2_1.0.18-r0.1_armv5te.ipk)
+   To unpack the .ipk files use following commands
+	$ ar -p alsa-dev_1.0.18-r0.1_armv5te.ipk data.tar.gz | tar -zx
+	$ ar -p libasound2_1.0.18-r0.1_armv5te.ipk data.tar.gz | tar -zx
+	$ ar -p alsa-lib-dev_1.0.18-r0.1_armv5te.ipk data.tar.gz | tar -zx
+   (http://arago-project.org/wiki/index.php/Crosscompiling_Outside_of_Arago)
+
+8) HOW TO RUN TESTS
+================================================================================
+ * Run DDT tests the same way you run LTP tests. Use ltprun program and pass to
+   it the test scenario file in the runtest directory (option -f) to run and the
+   platform (option -P) to use. For example:
+     ./runltp -P am335x-evm -f ddt/lmbench
+   The platform name specified with -P option must exist in the platforms/ dir.
+   It is also possible to run tests without -P option, in such case the ltprun
+   script won't filter test cases and it is possible that tests cases not 
+   supported by the platform you are running on will be called.
+ * In addition to selecting test scenarios using -f option, users can also 
+   filter test cases using -s PATTERN and -S SKIPFILE options. These options
+   select or skip test cases based on the test case TAG specified in the test
+   scenario file.
+ * The runltp script have lot of options. Some useful ones for stress tests are:
+   -t DURATION: Define duration of the test in s,m,h,d.
+   -x INSTANCES: Run multiple test instances in parallel.
+   -c <options>: Run test under additional background CPU load
+   -D <options>: Run test under additional background load on Secondary storage
+   -m <options>: Run test under additional background load on Main memory
+   -i <options>: Run test under additional background load on IO Bus
+   -n          : Run test with network traffic in background.
+
+9) @setup_requires Naming Conventions
+================================================================================
+As discussed in section 4.2 above, @setup_requires is used to highlight test scenarios' setup
+requirements. The following @setup_requires tags are currently defined.
+If required, please feel free to define a new tag below and send a patch to the Opentest mailing list.
+
+* Video Related:
+usbhostmsc, usbhosthid_mouse, usbhosthid_keyboard, usbhostaudio, usbhostvideo, usbslavefbs, usbslavecdc, usbslaverndis, usbslaveasync
+
+* USB Related:
+usbhostmsc, usbhosthid, usbhostaudio, usbhostvideo, usbslavefbs, usbslavecdc, usbslaverndis, usbslaveasync
+
+* Storage Related:
+sd, sdhc, mmc, sata
+
+10) How to merge LTP to LTP-DDT
+================================================================================
+* fetch LTP using LTP release label. Ex: ltp-20150119
+git fetch https://github.com/linux-test-project/ltp master:new_branch
+git checkout new_branch
+git checkout -b ltp-20150119 20150119
+
+* merge LTP release into 'ltp' branch
+git checkout ltp
+git merge -X theirs ltp-20150119 
+git status
+resolve conflicts if there is any
+git commit
+
+* optional: delete files which were deleted in LTP from 'ltp' branch
+git diff ltp..ltp-20150119 --summary > diff_between_ltp_and_ltp-20150119.txt
+write a script to delete and 'git rm' the files which are being deleted by LTP
+git commit
+
+* merge ltp branch to 'next' branch
+git checkout next
+git merge ltp
+git status
+
+Usually, there are some conflicts. Copy 'Unmerged paths' part to a seperate file; 
+then
+# First, use the below to resolve the conflicts:
+# For 'testcases/ddt/Makefile' use 'git checkout --ours' to merge
+# For others, use 'git checkout --theirs' to resolove the conflicts
+#
+# Then, use 'git add/rm' to commit
+# For 'deleted by them', use 'git rm' to remove those files
+# For 'added by us', use 'git rm' to remove them if they are not added by ltp-ddt
+# For others, use 'git add' to add those files
+#
+# For 'runltp', need manually resolve the conflict and add it.
+git commit
+
+* optional: compare files between 'next' and 'ltp' and overwrite the files in 'next' for non-ddt files if there is any diff
+
+* build/test new ltp-ddt
+
+11) HELP/SUPPORT
+================================================================================
+   Please submit your queries or comments to the opentest mailing list at 
+   opentest@arago-project.org
+   

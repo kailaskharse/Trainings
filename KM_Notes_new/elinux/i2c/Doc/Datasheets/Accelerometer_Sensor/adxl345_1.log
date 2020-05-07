@@ -1,0 +1,28 @@
+ 4.701232] adxl34x-i2c: adxl34x_i2c_init
+[    4.705535] adxl34x-i2c: adxl34x_i2c_probe
+[    4.709899] adxl34x.c: adxl34x_probe
+[    4.713714] adxl34x-i2c: adxl34x_smbus_read
+[    4.718658] adxl34x-i2c: adxl34x_smbus_write
+[    4.724029] input: ADXL34x accelerometer as /devices/platform/omap/omap_i2c.4/i2c-4/4-0053/input/input1
+[    4.734497] adxl34x-i2c: adxl34x_smbus_write
+[    4.739318] adxl34x-i2c: adxl34x_smbus_write
+[    4.744262] adxl34x-i2c: adxl34x_smbus_write
+[    4.749145] adxl34x-i2c: adxl34x_smbus_write
+[    4.754028] adxl34x-i2c: adxl34x_smbus_write
+[    4.758972] adxl34x-i2c: adxl34x_smbus_write
+[    4.763824] adxl34x-i2c: adxl34x_smbus_write
+[    4.768768] adxl34x-i2c: adxl34x_smbus_write
+[    4.773651] adxl34x-i2c: adxl34x_smbus_write
+[    4.778778] adxl34x-i2c: adxl34x_smbus_write
+[    4.783691] adxl34x-i2c: adxl34x_smbus_write
+[    4.788299] smsc95xx 1-1.1:1.0: eth0: register 'smsc95xx' at usb-ehci-omap.0-1.1, smsc95xx USB 2.0 Ethernet, 2e:60:b2:55:3c:0a
+[    4.800781] adxl34x-i2c: adxl34x_smbus_write
+[    4.805664] adxl34x-i2c: adxl34x_smbus_write
+[    4.810485] adxl34x-i2c: adxl34x_smbus_write
+[    4.815368] adxl34x-i2c: adxl34x_smbus_write
+[    4.820190] adxl34x-i2c: adxl34x_smbus_write
+[    4.825042] adxl34x-i2c: adxl34x_smbus_write
+[    4.829864] adxl34x-i2c: adxl34x_smbus_write
+[    4.834716] adxl34x-i2c: adxl34x_smbus_write
+[    4.839569] adxl34x-i2c: adxl34x_smbus_write
+[    4.845611] input: twl6040:vibrator as /device

@@ -1,0 +1,19 @@
+Linux Debugging Techniques:
+--------------------------
+
+@ User space
+gdb
+valgrind
+strace
+
+
+@ kernel space
+kgdb
+kdb
+module debugging
+kernel panic
+kprobe
+jprobe
+crashdump
+ftrace
+

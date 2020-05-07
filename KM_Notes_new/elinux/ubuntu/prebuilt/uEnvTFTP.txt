@@ -1,0 +1,8 @@
+ethaddr=00:00:00:00:00:14
+ipaddr=192.168.1.14
+serverip=192.168.1.21
+uenvcmd=run tftpuimage;run tftpfdt; run bootargs; bootz ${loadaddr} - ${fdtaddr};
+bootargs=console=ttyO0,115200n8 root=/dev/mmcblk0p2 ro rootfstype=ext4 rootwait 
+tftpuimage=tftp 0x82000000 board4/zImage
+tftpfdt=tftp 0x88000000 board4/am335x-boneblack.dtb
+

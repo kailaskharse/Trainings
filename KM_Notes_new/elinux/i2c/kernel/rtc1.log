@@ -1,0 +1,23 @@
+[KRISHNA]#./i2c_dev r 0 1
+[  169.448455] I2C_FUNCS: drivers/i2c/i2c-dev.c:i2cdev_ioctl:457
+[  169.454559] I2C_SLAVE: drivers/i2c/i2c-dev.c:i2cdev_ioctl:425
+[  169.460723] I2C_SMBUS: drivers/i2c/i2c-dev.c:i2cdev_ioctl:465
+[  169.466827] drivers/i2c/i2c-dev.c:i2cdev_ioctl_smbus:334
+[  169.472503] drivers/i2c/i2c-core.c:i2c_smbus_xfer:2134
+[  169.478057] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:522
+[  169.484436] transmit_data:0
+[  169.487487] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:522
+[  169.493896] receive_data:50
+The value read from the register is 50
+[KRISHNA]#./i2c_dev r 0 1
+[  170.601989] I2C_FUNCS: drivers/i2c/i2c-dev.c:i2cdev_ioctl:457
+[  170.608215] I2C_SLAVE: drivers/i2c/i2c-dev.c:i2cdev_ioctl:425
+[  170.614318] I2C_SMBUS: drivers/i2c/i2c-dev.c:i2cdev_ioctl:465
+[  170.620452] drivers/i2c/i2c-dev.c:i2cdev_ioctl_smbus:334
+[  170.626098] drivers/i2c/i2c-core.c:i2c_smbus_xfer:2134
+[  170.631622] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:522
+[  170.638000] transmit_data:0
+[  170.641052] drivers/i2c/busses/i2c-omap.c:omap_i2c_xfer_msg:522
+[  170.647430] receive_data:51
+The value read from the register is 51
+

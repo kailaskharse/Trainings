@@ -1,0 +1,27 @@
+i2c Probing
+
+The i2c probe command allows for quickly discovering any clients on the I2C bus. Here you can see an I2C slave being found at address 0x20:
+
+bfin> i2c probe
+Valid chip addresses:
+ 20
+Reading
+
+The i2c md command allows you to quickly read specific registers from an I2C device. To read 16 registers starting at register 0 from slave 0x20:
+
+bfin> i2c md 0x20 0 0x10
+Writing
+
+There are a few I2C sub-commands to write to a device in a variety of ways.
+
+You can interactively enter values starting at register 0x5 (and auto-incrementing to the next register) to slave 0x20:
+
+bfin> i2c mm 0x20 0x5
+Or you can interactively enter values at register 0x5 over and over to slave 0x20:
+
+bfin> i2c nm 0x20 0x5
+You can write a 0x30 registers starting at register 0x5 with a specific value of 0x18 to slave 0x20:
+
+bfin> i2c mw 0x20 0x5 0x18 0x30
+
+

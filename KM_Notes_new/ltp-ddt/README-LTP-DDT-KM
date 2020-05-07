@@ -1,0 +1,124 @@
+Linux Test Project - Device Driver Test (LTP-DDT) Development Enviornment:
+-------------------------------------------------------------------------
+
+Step1: Install Toolchain
+
+Linux-3.14 kernel install gcc 4
+Linux-4.4 kernel install gcc 7.
+
+Upgrade kernel 3.14 to 4.4:
+--------------------------
+sudo apt-get install linux-generic-lts-xenial
+
+Step2: CROSS-COMPILE AND INSTALL Kernel
+cd to kernel diretory and then do headers_install in kernel install directory
+
+	$ cd ~/KM_GIT/bbb/kernel-bbb-3.14
+	$ make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- distclean
+	$ make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabihf- headers_install
+
+Step3: Download ltp-ddt from km server
+	$ cd ~/KM_GIT/bbb/ltp-ddt/
+	$ git clone git@192.168.1.6:bbb/ltp-ddt.git
+
+Step4: Initiate LTP - DDT Build
+$ cd ~/KM_GIT/bbb/ltp-ddt
+$ make autotools
+$ export CROSS_COMPILER=arm-linux-gnueabihf-
+$ export CC=${CROSS_COMPILER}gcc
+$ export LD=${CROSS_COMPILER}ld
+$ export AR=${CROSS_COMPILER}ar
+$ export STRIP=${CROSS_COMPILER}strip
+$ export RANLIB=${CROSS_COMPILER}ranlib
+$./configure --host=x86-64 
+
+$ make SKIP_IDCHECK=1  KERNEL_INC=~/toolchain/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/include/  KERNEL_USR_INC=~/toolchain/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/  CROSS_COMPILE=arm-linux-gnueabihf- PLATFORM=am335x-evm
+
+
+Step6: Install
+$sudo make DESTDIR=/opt/ltp-ddt-install SKIP_IDCHECK=1 PLATFORM=beaglebone install
+Copy the entire /opt folder on SD-CARD and boot beagle bone black with SD-CARD inserted
+
+Step7:
+Run DDT tests on beagle bone black with example as shown:
+
+	$ ./runltp -P am335x-evm -f ddt/gpio-tests
+
+
+
+
+tep - 1 
+------------------------------------------------------
+Update linux to linux 4.4 
+
+	$ sudo apt-get install linux-generic-lts-xenial
+
+------------------------------------------------------
+Use gcc 7.1 compiler
+------------------------------------------------------
+*******************************************************************
+
+*******************************************************************
+Step - 2
+------------------------------------------------------
+Go to kernel
+	$ cd ~/KM_GIT/bbb/kernel-bbb-3.14
+------------------------------------------------------
+Give PATH of GCC
+	$PATH=$PATH:~/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf/bin:PATH
+------------------------------------------------------
+run below commands 
+	$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- distclean
+	$ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- headers_install
+------------------------------------------------------
+********************************************************************
+
+********************************************************************
+Step - 3
+------------------------------------------------------
+Go to ltp-ddt folder
+	$ cd ~/KM_GIT/bbb/ltp-ddt
+------------------------------------------------------
+Now install autotools and run make command
+	$ sudo apt-get install automake
+	$ make autotools
+------------------------------------------------------
+Create envinorment tools
+	export CROSS_COMPILER=arm-linux-gnueabihf-
+	export CC=${CROSS_COMPILER}gcc
+	export LD=${CROSS_COMPILER}ld
+	export AR=${CROSS_COMPILER}ar
+	export STRIP=${CROSS_COMPILER}strip
+	export RANLIB=${CROSS_COMPILER}ranlib
+------------------------------------------------------
+
+	$./configure --host=x86_64
+------------------------------------------------------
+********************************************************************
+
+********************************************************************
+Step - 4
+------------------------------------------------------
+Now run make file 
+	$ make SKIP_IDCHECK=1  KERNEL_INC=~/toolchain/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/include/  KERNEL_USR_INC=~/toolchain/gcc-linaro-7.1.1-2017.08-x86_64_arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/include/  CROSS_COMPILE=arm-linux-gnueabihf- PLATFORM=am335x-evm
+------------------------------------------------------
+if we run above command then we will get errors
+------------------------------------------------------
+ERROR-1: rpmsg_rpc.h file missing
+	Now goto cd ~/KM_GIT/bbb/ltp-ddt/testcases/ddt/ipc_test_suite/src/rpmsg/
+	here you will not find rpmsg_rpc.h
+	$ locate rpmsg_rpc.h
+		/home/harish/KM_GIT/linux-4.4/include/linux/rpmsg_rpc.h
+		/home/harish/KM_GIT/linux-4.4/include/uapi/linux/rpmsg_rpc.h
+	$ cp ~/KM_GIT/linux-4.4/include/linux/rpmsg_rpc.h ~/KM_GIT/bbb/ltp-ddt/testcases/ddt/ipc_test_suite/src/rpmsg/
+	Now Open rpmsg_rpc.h 
+	$ vi ~/KM_GIT/bbb/ltp-ddt/testcases/ddt/ipc_test_suite/src/rpmsg/rpmsg_rpc.h
+		Now change below line
+		#include <uapi/linux/rpmsg_rpc.h>  to
+		#include "/home/harish/KM_GIT/linux-4.4/include/uapi/linux/rpmsg_rpc.h"
+--------------------------------------------------------
+ERROR-2:realtime_config.h file is missing
+	Now go $ cd ~/KM_GIT/bbb/ltp-ddt/testcases/realtime/include
+	In this file we have realtime_config.h.in insted of realtime_config.h change it
+---------------------------------------------------------
+***************************************************************************

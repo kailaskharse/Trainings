@@ -1,0 +1,15 @@
+#Local host Without Network with in system
+#MYSQL_HOST=localhost
+#MYSQL_USER=
+#MYSQL_PASSWD=
+
+#Local network LAN
+MYSQL_HOST=192.168.1.21
+MYSQL_USER=root
+MYSQL_PASSWD=1234
+
+
+#Public network WAN
+#MYSQL_HOST=139.59.40.228
+#MYSQL_USER=
+#MYSQL_PASSWD=
